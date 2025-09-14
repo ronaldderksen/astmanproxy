@@ -26,7 +26,8 @@
 
 #ifndef __BYTE_ORDER
 #ifdef __linux__
-#include <endian.h>
+/* Avoid recursive self-include due to our local endian.h name. */
+#include_next <endian.h>
 #elif defined(__OpenBSD__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #if defined(__OpenBSD__)
 #include <machine/types.h>
@@ -57,4 +58,3 @@
 #endif /* __BYTE_ORDER */
 
 #endif /* _ASTERISK_ENDIAN_H */
-

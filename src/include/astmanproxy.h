@@ -134,7 +134,7 @@ struct message {
 	struct mansession *session;
 };
 
-struct proxyconfig pc;
+extern struct proxyconfig pc;
 extern int debug;
 
 /* Common Function Prototypes */

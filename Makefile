@@ -48,8 +48,9 @@ ifeq (${OSARCH},Darwin)
   MKTEMP=/usr/bin/mktemp
 else
   #These are used for all but Darwin
-  CFLAGS+=-I-
-  LIBS+=-ldl -pthread
+  # GCC's old -I- is long removed; avoid it for modern toolchains
+  # Link explicitly with libcrypto on Linux to satisfy OpenSSL 1.1+/3.x
+  LIBS+=-ldl -pthread -lcrypto
   ASTLINK=-Wl,-E
   SOLINK=-shared -Xlinker -x
   LOGDIR=/var/log/asterisk   

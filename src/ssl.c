@@ -50,7 +50,7 @@ static int ssl_initialized;
    Initializes all the ssl related stuff here.  */
 int init_secure(char *certfile)
 {
-	SSL_METHOD *meth;
+	const SSL_METHOD *meth;
 
 	SSLeay_add_ssl_algorithms();
 	SSL_load_error_strings();
@@ -83,7 +83,7 @@ int init_secure(char *certfile)
 */
 int client_init_secure(void)
 {
-	SSL_METHOD *meth;
+	const SSL_METHOD *meth;
 
 	/* client init */
 	SSLeay_add_ssl_algorithms();
