@@ -55,13 +55,19 @@ int init_secure(char *certfile)
 	SSLeay_add_ssl_algorithms();
 	SSL_load_error_strings();
 
-	/* server init */
-	meth = SSLv23_server_method();
+	/* server init (modern TLS) */
+	meth = TLS_server_method();
 	sctx = SSL_CTX_new(meth);
 
 	if (!sctx) {
 		return errexit("Failed to create a server ssl context!");
 	}
+
+	/* Enforce modern protocols and disable compression */
+	SSL_CTX_set_min_proto_version(sctx, TLS1_2_VERSION);
+#ifdef SSL_OP_NO_COMPRESSION
+	SSL_CTX_set_options(sctx, SSL_OP_NO_COMPRESSION);
+#endif
 
 	if (SSL_CTX_use_certificate_file(sctx, certfile, SSL_FILETYPE_PEM) <= 0) {
 		return errexit("Failed to use the certificate file!");
@@ -85,9 +91,9 @@ int client_init_secure(void)
 {
 	const SSL_METHOD *meth;
 
-	/* client init */
+	/* client init (modern TLS) */
 	SSLeay_add_ssl_algorithms();
-	meth = SSLv23_client_method();
+	meth = TLS_client_method();
 	SSL_load_error_strings();
 	cctx = SSL_CTX_new (meth);
 
@@ -95,7 +101,14 @@ int client_init_secure(void)
 		debugmsg("Failed to create a client ssl context!");
 	else
 		debugmsg("Client SSL Context Initialized");
-	return 0;
+
+	if (cctx) {
+		SSL_CTX_set_min_proto_version(cctx, TLS1_2_VERSION);
+#ifdef SSL_OP_NO_COMPRESSION
+		SSL_CTX_set_options(cctx, SSL_OP_NO_COMPRESSION);
+#endif
+	}
+    return 0;
 }
 
 /*! \brief Takes the negative ssl fd and returns the positive fd recieved from the os. 
